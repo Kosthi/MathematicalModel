@@ -33,11 +33,10 @@ class WOA():
     
     def rand_whale(self):
         """随机选择鲸鱼"""
-        #while True:
-        rand_index = random.randrange(0, self.whale_num)
-        # print(rand_index)
-            #if self.parm[rand_index, :].all() != self.gBest_parm.all() or self.gBest_parm.mean != 0:
-                #break;
+        while True:
+            rand_index = random.randrange(0, self.whale_num)
+            if self.parm[rand_index, :].all() != self.gBest_parm.all() or self.gBest_parm.mean != 0:
+                break;
         return rand_index
 
     def optimize(self):
@@ -61,34 +60,29 @@ class WOA():
                 p = np.random.uniform()
                 R1 = np.random.uniform()
                 R2 = np.random.uniform()
-                l = 2 * np.random.uniform() - 1
+                l = np.random.uniform()
                 # 参数向量
                 A = 2 * a * R1 - a
                 C = 2 * R2
                 # 自适应权重因子w对数优化
                 w = 1 - np.log(1 + (np.e - 1)  *  t / self.max_iter)
                 if p >= 0.5:
-                    #print(1)
                     # 螺旋泡泡攻击
                     D = abs(C * self.gBest_parm - self.parm[i, :])
                     self.parm[i, :] = w  *  D * np.exp(self.b * l) * np.cos(2 * np.pi * l) + self.gBest_parm
                 else:
-
                     #搜索目标猎物
                     if abs(A) < 1:
-                        #print(2)
                         # 以最优鲸鱼为目标，局部搜索
                         D = abs(self.gBest_parm - self.parm[i, :])
                         self.parm[i, :] = self.gBest_parm - w * A * D
                     else:
-                        #print(3)
                         # 以随机鲸鱼为目标，全局搜索
                         rand_index = self.rand_whale()
                         parm_rand = self.parm[rand_index, :]
                         D = abs(C * parm_rand - self.parm[i, :])
                         self.parm[i, :] = parm_rand - w * A * D
                 # 随机差分变异优化 避免局部最优
-                #print(4)
                 rand_index = self.rand_whale()
                 parm_rand = self.parm[rand_index, :]
                 self.parm[i, :] = p * (self.gBest_parm - self.parm[i, :]) + p * (parm_rand - self.parm[i, :])
